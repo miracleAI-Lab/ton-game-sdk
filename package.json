@@ -1,6 +1,6 @@
 {
-  "name": "mai3-phaser-ui",
-  "version": "1.0.6",
+  "name": "ton-game-sdk",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -13,11 +13,13 @@
   "keywords": [
     "phaser",
     "phaser-ui",
-    "Mai3"
+    "mai3",
+    "MAI3",
+    "MiracleAI"
   ],
-  "author": "William",
+  "author": "William.Wang",
   "license": "MIT",
-  "description": "",
+  "description": "ton-game-sdk is a UI component library and utilities for the TON blockchain bindings in the Phaser game engine.",
   "devDependencies": {
     "@types/node": "^22.7.4",
     "rimraf": "^6.0.1",
