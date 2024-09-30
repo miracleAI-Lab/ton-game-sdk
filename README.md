@@ -114,12 +114,11 @@ export class ButtonDemo extends BaseScene {
   }
 
   create() {
-    this.add.connectButton(this, {
+    this.mai3.add.connectWalletButton({
       x: 200,
       y: 200,
       width: 160,
       height: 60,
-      texture: 'btn001',
       style: 'dark',
       language: 'en',
       walletApp: 'telegram-wallet',

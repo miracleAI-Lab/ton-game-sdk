@@ -48,7 +48,7 @@ export class ButtonDemo extends BaseScene {
 
     // const gameFi = await GameFi.create(gameFiParams);
 
-    const btn = this.mai3.add.connectWalletButton({
+    this.mai3.add.connectWalletButton({
       x: 200,
       y: 200,
       width: 160,
@@ -60,8 +60,6 @@ export class ButtonDemo extends BaseScene {
         console.log('wallet address: ', wallet?.account.address);
       }
     });
-
-    this.add.existing(btn);
 
     // gameFi.createConnectButton({
     //   scene: this,
