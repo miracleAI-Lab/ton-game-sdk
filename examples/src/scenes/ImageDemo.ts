@@ -48,6 +48,7 @@ export class ImageDemo extends BaseScene {
       borderWidth: 2,
       borderColor: 0xFFD700,
       backgroundColor: 0x32CD32,
+      enableSmoothScaleAnim: true,
     });
 
     this.mai3.add.image({

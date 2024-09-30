@@ -1,9 +1,9 @@
 import { BaseScene } from "../game";
 import { Checkbox } from './Checkbox';
-import { Container } from './Container';
 import { CheckboxGroupConfig } from '../types';
+import { BaseButton } from "./BaseButton";
 
-export class CheckboxGroup extends Container {
+export class CheckboxGroup extends BaseButton {
     private _checkboxes: Checkbox[] = [];
     private _selectedValues: string[] = [];
     private _selectedIndexes: number[] = [];

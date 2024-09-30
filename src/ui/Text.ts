@@ -105,6 +105,10 @@ export class Text extends Container {
     this._config = Utils.MergeRight(this._config, { text }) as TextConfig;
     this.reDraw(this._config);
   }
+  
+  get config(): TextConfig {
+    return this._config!;
+  }
 
   setWidth(width: number) {
     this._config = Utils.MergeRight(this._config, { width }) as TextConfig;
@@ -116,7 +120,4 @@ export class Text extends Container {
     this.reDraw(this._config);
   }
 
-  get config(): TextConfig {
-    return this._config!;
-  }
 }

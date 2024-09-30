@@ -2,14 +2,17 @@
 import { BaseScene } from "../../../dist";
 import { Wallet } from "../../../dist/game";
 export class ButtonDemo extends BaseScene {
-
   constructor() {
-    super('ButtonDemo');
+    super("ButtonDemo");
   }
 
   preload() {
     super.preload();
-    this.load.atlas('buttons', 'https://labs.phaser.io/assets/ui/nine-slice.png', 'https://labs.phaser.io/assets/ui/nine-slice.json');
+    this.load.atlas(
+      "buttons",
+      "https://labs.phaser.io/assets/ui/nine-slice.png",
+      "https://labs.phaser.io/assets/ui/nine-slice.json"
+    );
   }
 
   create() {
@@ -48,18 +51,32 @@ export class ButtonDemo extends BaseScene {
 
     // const gameFi = await GameFi.create(gameFiParams);
 
-    this.mai3.add.connectWalletButton({
-      x: 200,
-      y: 200,
-      width: 160,
-      height: 60,
-      style: 'dark',
-      language: 'en',
-      walletApp: 'telegram-wallet',
-      onWalletChange: (wallet: Wallet | null) => {
-        console.log('wallet address: ', wallet?.account.address);
-      }
-    });
+    this.mai3.add
+      .connectWalletButton({
+        x: 200,
+        y: 200,
+        width: 160,
+        height: 60,
+        style: "dark",
+        language: "en",
+        walletApp: "telegram-wallet",
+        onWalletChange: (wallet: Wallet | null) => {
+          console.log("wallet address: ", wallet?.account.address);
+        },
+        handleUp: {
+          handleFn: () => {
+            console.log("handleUp");
+            // this.scene.start("DemoScene");
+          },
+        },
+        handleDown: {
+          handleFn: () => {
+            console.log("handleDown");
+            // this.scene.start("DemoScene");
+          },
+        },
+      })
+      .debugHitArea();
 
     // gameFi.createConnectButton({
     //   scene: this,
@@ -76,19 +93,19 @@ export class ButtonDemo extends BaseScene {
       width: 150,
       height: 50,
       text: "返回DemoScene",
-      backgroundColor: 0x4CAF50,
-      borderColor: 0x45A049,
+      backgroundColor: 0x4caf50,
+      borderColor: 0x45a049,
       borderWidth: 2,
       radius: 10,
       textStyle: {
-        fontFamily: 'Arial',
-        fontSize: '18px',
-        color: '#FFFFFF',
+        fontFamily: "Arial",
+        fontSize: "18px",
+        color: "#FFFFFF",
       },
       handleUp: {
         handleFn: () => {
-          this.scene.start('DemoScene');
-        }
+          this.scene.start("DemoScene");
+        },
       },
     });
   }
@@ -99,15 +116,15 @@ export class ButtonDemo extends BaseScene {
       y: 70,
       width: 200,
       height: 80,
-      borderColor: 0x900C3F,
+      borderColor: 0x900c3f,
       borderWidth: 3,
-      backgroundColor: 0xC70039,
+      backgroundColor: 0xc70039,
       text: "关闭窗口",
       radius: 20,
       textStyle: {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#FFFFFF',
+        fontFamily: "Arial",
+        fontSize: "24px",
+        color: "#FFFFFF",
       },
       handleHover: {
         audio: "sfx-hover",
@@ -116,8 +133,7 @@ export class ButtonDemo extends BaseScene {
         audio: "sfx-press",
       },
       handleUp: {
-        handleFn: () => {
-        }
+        handleFn: () => {},
       },
     });
   }
@@ -126,15 +142,15 @@ export class ButtonDemo extends BaseScene {
     const btn = this.mai3.add.textButton({
       x: 220,
       y: 70,
-      borderColor: 0xFF5733,
+      borderColor: 0xff5733,
       borderWidth: 3,
-      backgroundColor: 0xFFC300,
+      backgroundColor: 0xffc300,
       text: "Mai3（可拖动）",
       radius: 20,
       textStyle: {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#000',
+        fontFamily: "Arial",
+        fontSize: "24px",
+        color: "#000",
       },
       handleHover: {
         audio: "sfx-hover",
@@ -143,9 +159,9 @@ export class ButtonDemo extends BaseScene {
         audio: "sfx-press",
         handleFn: () => {
           btn.text = "哈哈你好";
-        }
+        },
       },
-      enableDrag: true
+      draggable: true,
     });
   }
 
@@ -157,19 +173,18 @@ export class ButtonDemo extends BaseScene {
       radius: 100,
       texture: "",
       frame: 0,
-      enableDrag: false,
+      draggable: false,
       backgroundAlpha: 1,
       geomType: "Circle",
       borderWidth: 6,
-      borderColor: 0xFFD700,
-      backgroundColor: 0x32CD32,
+      borderColor: 0xffd700,
+      backgroundColor: 0x32cd32,
       handleHover: {
-        audio: "sfx-hover"
+        audio: "sfx-hover",
       },
       handleDown: {
         audio: "sfx-press",
-        handleFn: () => {
-        }
+        handleFn: () => {},
       },
     });
 
@@ -180,19 +195,18 @@ export class ButtonDemo extends BaseScene {
       radius: 100,
       texture: "cangshu",
       frame: 0,
-      enableDrag: false,
+      draggable: false,
       backgroundAlpha: 1,
       geomType: "Circle",
       borderWidth: 6,
-      borderColor: 0xFFD700,
-      backgroundColor: 0x32CD32,
+      borderColor: 0xffd700,
+      backgroundColor: 0x32cd32,
       handleHover: {
-        audio: "sfx-hover"
+        audio: "sfx-hover",
       },
       handleDown: {
         audio: "sfx-press",
-        handleFn: () => {
-        }
+        handleFn: () => {},
       },
     });
   }
@@ -203,7 +217,7 @@ export class ButtonDemo extends BaseScene {
       y: 160,
       width: 160,
       height: 60,
-      texture: 'StartGameButton',
+      texture: "StartGameButton",
       borderWidth: 3,
       handleHover: {
         audio: "sfx-hover",
@@ -217,13 +231,13 @@ export class ButtonDemo extends BaseScene {
         texture: "StartGameButtonDown",
         handleFn: () => {
           console.log("handleDown");
-        }
+        },
       },
       handleUp: {
         texture: "StartGameButton",
         handleFn: () => {
           console.log("handleUp");
-        }
+        },
       },
     });
 

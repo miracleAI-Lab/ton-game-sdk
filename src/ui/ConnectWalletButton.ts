@@ -12,8 +12,10 @@ import Utils from '../utils';
 import { loadIcons } from '../common/icons';
 import { BaseScene, TonConnectUI } from "../game";
 import { Container } from './Container';
+import { BaseButton } from './BaseButton';
+import { TonConnector } from '../game/TonConnetor';
 
-export class ConnectWalletButton extends Container {
+export class ConnectWalletButton extends BaseButton {
   buttonContainer: Container;
   buttonBackground: Phaser.GameObjects.RenderTexture;
   buttonText: Phaser.GameObjects.Text;
@@ -21,29 +23,22 @@ export class ConnectWalletButton extends Container {
   buttonWidth: number;
   buttonHeight: number;
   wallet: Wallet | null = null;
-  connector: TonConnectUI;
-  // params: ConnectWalletButtonParams;
+  connector?: TonConnectUI;
   connectionSourceName: WalletApp;
-  unsubscribeFromConnector: () => void;
+  unsubscribeFromConnector?: () => void;
   dropdownMenu?: DropdownMenu;
   locale: Locale;
   currentIcon: string;
-  changeIconTimer: NodeJS.Timeout | number | null = null;
+  changeIconTimer: number | null = null;
   private onError: HandleError;
   private _config: ConnectWalletButtonConfig;
 
   constructor(scene: BaseScene, config: ConnectWalletButtonConfig) {
-    super(scene, config, 'ConnectButton');
+    super(scene, config, 'ConnectWalletButton');
     this._config = config;
 
     this.connectionSourceName = config.walletApp || 'telegram-wallet';
-    this.connector = new TonConnectUI({
-      manifestUrl: 'https://raw.githubusercontent.com/ton-defi-org/tonconnect-manifest-temp/main/tonconnect-manifest.json',
-      uiPreferences: {
-        borderRadius: 's'
-      }
-    });
-
+    this.connector = TonConnector.getInstance();
     this.onError = config.onError
       ? config.onError
       : (error) => {
@@ -85,9 +80,9 @@ export class ConnectWalletButton extends Container {
 
     this.buttonWidth = buttonWidth;
     this.buttonHeight = buttonHeight;
-
+    this._config.width = buttonWidth;
+    this._config.height = buttonHeight;
     this.currentIcon = styleSchema.icons.diamond;
-
     const button = scene.add.graphics({
       x: 0,
       y: 0,
@@ -101,13 +96,12 @@ export class ConnectWalletButton extends Container {
     const buttonRt = scene.add.renderTexture(0, 0, buttonWidth, buttonHeight);
     buttonRt.draw(button);
     buttonRt.setOrigin(0);
-    button.removeAllListeners();
     button.destroy();
 
     this.buttonBackground = buttonRt;
-    this.buttonContainer.RefreshBounds();
-    this.buttonContainer.setEventInteractive();
-    this.enable();
+    this.RefreshBounds();
+    this.initializeEvents();
+    this.updateConfig(this._config);
 
     const walletChanged = (wallet: Wallet | null) => {
       this.wallet = wallet;
@@ -123,9 +117,9 @@ export class ConnectWalletButton extends Container {
         config.onWalletChange(wallet);
       }
     };
-  
-    this.unsubscribeFromConnector = this.connector.onStatusChange(walletChanged);
-    this.connector.connectionRestored.then((connected) => {
+    
+    this.unsubscribeFromConnector = this.connector?.onStatusChange(walletChanged);
+    this.connector?.connectionRestored.then((connected: boolean) => {
       if (!connected) {
         walletChanged(null);
       }
@@ -143,11 +137,6 @@ export class ConnectWalletButton extends Container {
     this.buttonIcon.setPosition(
       buttonDesign.horizontalPadding - buttonDesign.icon.horizontalPadding,
       this.buttonHeight * 0.5 - icon.displayHeight * 0.5);
-
-    // buttonDesign.horizontalPadding -
-    // buttonDesign.icon.horizontalPadding +
-    // buttonDesign.icon.width * 0.5,
-    // this.buttonHeight * 0.5,
 
     this.dropdownMenu = new DropdownMenu(
       scene,
@@ -186,7 +175,7 @@ export class ConnectWalletButton extends Container {
       this.currentIcon = icon;
       this.buttonIcon.setTexture(icon);
     } else {
-      this.changeIconTimer = setTimeout(() => {
+      this.changeIconTimer = window.setTimeout(() => {
         this.changeIcon(icon);
       }, 4);
     }
@@ -194,21 +183,19 @@ export class ConnectWalletButton extends Container {
 
   private cancelIconChange() {
     if (this.changeIconTimer != null) {
-      clearTimeout(this.changeIconTimer);
+      window.clearTimeout(this.changeIconTimer);
       this.changeIconTimer = null;
     }
   }
 
   protected handleUp(): void {
     super.handleUp();
-    Utils.smoothScale(this.scene.tweens, this, 1.02, 125);
     this.connectWallet();
   }
 
   protected handleDown(): void {
     super.handleDown();
     this.scene.game.canvas.style.cursor = 'pointer';
-    Utils.smoothScale(this.scene.tweens, this, 0.98, 125);
   }
 
   protected handleOut(): void {
@@ -219,8 +206,6 @@ export class ConnectWalletButton extends Container {
     if (this.wallet != null) {
       this.repaintButtonBackground(styleSchema.backgroundColor, styleSchema.borderColor);
     }
-
-    Utils.smoothScale(this.scene.tweens, this, 1, 125);
   }
 
   protected handleOver(): void {
@@ -231,17 +216,15 @@ export class ConnectWalletButton extends Container {
     if (this.wallet != null) {
       this.repaintButtonBackground(styleSchema.backgroundColorHover, styleSchema.borderColor);
     }
-
-    Utils.smoothScale(this.scene.tweens, this, 1.02, 125);
   }
 
   connectWallet = async () => {
     try {
       this.disable();
-      if (this.connector.connected) {
+      if (this.connector?.connected) {
         await this.disconnectWallet();
       }
-      await this.connector.openModal();
+      await this.connector?.openModal();
     } catch (error: any) {
       console.log("connectWallet error", error);
       this.onError(error);
@@ -253,7 +236,7 @@ export class ConnectWalletButton extends Container {
   disconnectWallet = async () => {
     try {
       this.disable();
-      await this.connector.disconnect();
+      await this.connector?.disconnect();
     } catch (error: any) {
       console.log("disconnect error", error);
       this.onError(error);
@@ -284,11 +267,11 @@ export class ConnectWalletButton extends Container {
   };
 
   private disable() {
-    this.buttonContainer.setInteractive(false);
+    this.setInteractive(false);
   }
 
   private enable() {
-    this.buttonContainer.setInteractive(
+    this.setInteractive(
       new Phaser.Geom.Rectangle(0, 0, this.buttonWidth, this.buttonHeight),
       Phaser.Geom.Rectangle.Contains
     );
@@ -331,15 +314,28 @@ export class ConnectWalletButton extends Container {
     this.buttonBackground.clear();
     this.buttonBackground.draw(background);
     this.buttonBackground.setOrigin(0);
-    background.removeAllListeners();
     background.destroy();
   }
 
   public override destroy() {
-    this.unsubscribeFromConnector();
+    this.unsubscribeFromConnector!();
     this.cancelIconChange();
-    this.buttonContainer.removeAllListeners();
-    this.buttonContainer.destroy();
+    if (this.buttonContainer) {
+      this.buttonContainer.removeAllListeners();
+      this.buttonContainer.destroy();
+    }
+    if (this.buttonBackground) {
+      this.buttonBackground.destroy();
+    }
+    if (this.buttonText) {
+      this.buttonText.destroy();
+    }
+    if (this.buttonIcon) {
+      this.buttonIcon.destroy();
+    }
+    if (this.dropdownMenu) {
+      this.dropdownMenu.destroy();
+    }
     super.destroy();
   }
 }

@@ -20,7 +20,6 @@
   "dependencies": {
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.4",
-    "buffer": "^6.0.3",
     "pathfinding": "^0.4.18",
     "phaser": "^3.85.2",
     "short-uuid": "5.2.0",

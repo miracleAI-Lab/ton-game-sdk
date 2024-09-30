@@ -1,8 +1,9 @@
-import { Container } from './Container';
 import { BackgroundType, ProgressConfig } from '../types';
 import Utils from '../utils';
 import { BaseScene } from "../game";
-export class ProgressBar extends Container {
+import { BaseButton } from './BaseButton';
+
+export class ProgressBar extends BaseButton {
     protected borderWidth?: number;
     protected borderColor?: number;
     protected radius?: number;

@@ -7,12 +7,13 @@ import {
 } from '../common/consts'
 // import {loadIcons} from './connect-button/icons';
 import Utils from '../utils';
+import { BaseButton } from "./BaseButton";
 
 interface HandleError {
     (error: Error | unknown): void;
 }
   
-export class ConnectButton extends Container {
+export class ConnectButton extends BaseButton {
     private _config: ConnectWalletButtonConfig;
     public image?: Phaser.GameObjects.NineSlice;
     label?: Phaser.GameObjects.Text;
@@ -106,20 +107,17 @@ export class ConnectButton extends Container {
     
     protected handleUp(): void {
         super.handleUp();
-        Utils.smoothScale(this.scene.tweens, this, 1.02, 125);
         this.connectWallet();
     }
 
     protected handleDown(): void {
         super.handleDown();
         this.scene.game.canvas.style.cursor = 'pointer';
-        Utils.smoothScale(this.scene.tweens, this, 0.98, 125);
     }
 
     protected handleOut(): void {
         super.handleOut();
         this.scene.game.canvas.style.cursor = 'default';
-        Utils.smoothScale(this.scene.tweens, this, 1, 125);
     }
 
     protected handleOver(): void {
@@ -163,6 +161,10 @@ export class ConnectButton extends Container {
         this.setActive(false);
     }
 
+    get config(): ConnectWalletButtonConfig {
+        return this._config!;
+    }
+
     destroy(fromScene?: boolean) {
         if (this.image) {
             this.image.destroy();
@@ -171,7 +173,4 @@ export class ConnectButton extends Container {
         super.destroy(fromScene);
     }
 
-    get config(): ConnectWalletButtonConfig {
-        return this._config!;
-    }
 }
