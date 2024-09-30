@@ -52,7 +52,7 @@ export class Sprite extends BaseButton {
     }
   }
 
-  public playAnims(
+  public play(
     key:
       | string
       | Phaser.Animations.Animation
