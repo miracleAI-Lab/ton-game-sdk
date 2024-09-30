@@ -1,0 +1,36 @@
+{
+  "name": "mai3-phaser-ui",
+  "version": "1.0.5",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "phaser",
+    "phaser-ui",
+    "Mai3"
+  ],
+  "author": "William",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@orbs-network/ton-access": "^2.3.3",
+    "@ton-community/assets-sdk": "^0.0.5",
+    "@ton/core": "^0.58.1",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.0.0",
+    "@tonconnect/ui": "^2.0.9",
+    "buffer": "^6.0.3",
+    "phaser": "^3.85.2"
+  }
+}
