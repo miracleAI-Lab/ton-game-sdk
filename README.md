@@ -1,6 +1,6 @@
-# game-engines-sdk - Phaser 3 UI Components Library
+## ton-game-sdk - Phaser 3 UI Components Library and utilities
 
-game-engines-sdk is a UI component library and utilities for the TON blockchain bindings in the Phaser game engine.
+ton-game-sdk is a UI component library and utilities for the TON blockchain bindings in the Phaser game engine.
 
 ## Key Features
 
@@ -34,20 +34,20 @@ game-engines-sdk is a UI component library and utilities for the TON blockchain 
 
 ## Installation
 
-Install **game-engines-sdk** via npm or yarn:
+Install **ton-game-sdk** via npm or yarn:
 
 ```bash
-npm install game-engines-sdk
+npm install ton-game-sdk
 # or
-yarn add game-engines-sdk
+yarn add ton-game-sdk
 ```
 
 ## Usage Example
 
-Here’s a quick example of how to create different types of buttons using the **game-engines-sdk** library:
+Here’s a quick example of how to create different types of buttons using the **ton-game-sdk** library:
 
 ```typescript
-import { BaseScene, Mai3Game } from "game-engines-sdk";
+import { BaseScene, Mai3Game } from "ton-game-sdk";
 
 export class ButtonDemo extends BaseScene {
   constructor() {
@@ -102,7 +102,7 @@ The **GameFi SDK** provides bindings and utilities to integrate **TON blockchain
 ### Connecting Wallet
 
 ```typescript
-import { BaseScene, Mai3Game } from "game-engines-sdk";
+import { BaseScene, Mai3Game } from "ton-game-sdk";
 
 export class ButtonDemo extends BaseScene {
   constructor() {
