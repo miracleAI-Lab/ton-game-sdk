@@ -293,6 +293,8 @@ export interface ImageButtonConfig extends NinePatchConfig {
 export interface ConnectWalletButtonConfig extends NinePatchConfig {
   language?: Locales;
   walletApp?: WalletApp;
+  manifestUrl?: string;
+  appUrl?: `${string}://${string}` | undefined;
   onWalletChange?: (wallet: Wallet | null) => void;
   onError?: HandleError;
 }
@@ -305,6 +307,9 @@ export interface RoundedButtonConfig extends BaseButtonConfig {
   borderColor?: number;
   backgroundColor?: number;
   backgroundAlpha?: number;
+  text?: string;
+  fontColor?: string
+  fontSize?: number
 }
 
 export interface NinePatchConfig extends BaseButtonConfig {
@@ -535,12 +540,14 @@ export interface TabsConfig extends BaseConfig {
   itemSpace?: number;
   padding?: number;
   texture?: string;
+  fontColor: string,
   onTabClick?: (index: number) => void;
 }
 
 export interface TabItem {
   title?: string;
   texture?: string;
+  activeImg: string
 }
 export interface ImageConfig extends BaseButtonConfig {
   id?: string;
