@@ -15,9 +15,11 @@
     "phaser-ui",
     "mai3",
     "TON",
+    "ton-sdk",
     "Telegram",
     "MiracleAI"
   ],
+  "repository": "https://github.com/miracleAI-Lab/ton-game-sdk.git",
   "author": "William",
   "license": "MIT",
   "description": "ton-game-sdk is a UI component library and utilities for the TON blockchain bindings in the Phaser game engine.",
