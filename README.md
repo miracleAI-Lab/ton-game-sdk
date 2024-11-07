@@ -31,6 +31,8 @@ ton-game-sdk is a UI component library and utilities for the TON blockchain bind
 - ✅ Toast
 - ✅ VolumeSlider
 - ✅ Sprite
+- ✅ ScrollView
+- ✅ ListView
 
 ## Installation
 
