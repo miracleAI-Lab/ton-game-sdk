@@ -1,20 +1,19 @@
 import { Container } from './Container';
 import { BaseScene } from "../game";
-import { TextButton, Text, TextBox, ImageButton, RoundedButton, Checkbox, CheckboxGroup, Label, ProgressBar, Slider, VolumeSlider, Image, Sprite } from './index';
-import { GridConfig } from '../types';
+import { BaseConfig, GridConfig } from '../types';
 import { Panel } from './Panel';
 
 const CellIndex = "cellIndex";
 
-export class Grid extends Panel {
-    private _content?: Container;
+export class Grid extends Panel<GridConfig> {
+    protected _content?: Container;
     private _gridLines?: Phaser.GameObjects.Graphics;
     private _draggingChild?: Container;
     private _originalPosition?: { x: number; y: number };
     private _originalIndex?: number;
     private _cellWidth: number = 0;
     private _cellHeight: number = 0;
-    protected _config?: GridConfig;
+    protected declare _config?: GridConfig;
 
     private indexToItemMap: Map<number, Container[]> = new Map<number, Container[]>();
     private positionToIndexMap: Map<string, number> = new Map<string, number>();
@@ -101,33 +100,38 @@ export class Grid extends Panel {
             this._gridLines.destroy();
             this._gridLines = undefined;
         }
-        this.positionSlotMap.clear();
+        this.positionSlotMap.forEach((value, key) => {
+            this.positionSlotMap.set(key, 0);
+        });
+        this.indexToItemMap.clear();
+        this.positionToIndexMap.clear();
     }
 
-    public addItems(childConfigs: any[]): void {
+    public addItems(childConfigs: BaseConfig[]): void {
         const emptyCells = this.getEmptyCells();
         emptyCells.forEach((emptyCell, index) => {
             if (index >= childConfigs.length) return;
+
             this.addItemToCell(childConfigs[index], emptyCell, index);
         });
     }
 
-    private addItemToCell(childConfig: any, emptyCell: { x: number; y: number }, index: number): void {
+    private addItemToCell(childConfig: BaseConfig, emptyCell: { x: number; y: number }, index: number): void {
         const { width, height } = this.calculateChildDimensions(childConfig);
         
         const mergedConfig = { ...childConfig, width, height };
-        const child = this.createChildFromConfig(mergedConfig);
+        const child = this.scene.getChild(mergedConfig);
         
         this.setupChild(child, emptyCell, index);
     }
 
-    private calculateChildDimensions(childConfig: any): { width: number; height: number } {
+    private calculateChildDimensions(childConfig: BaseConfig): { width: number; height: number } {
         const width = this._config?.autoFill ? this._cellWidth : childConfig.width;
         const height = this._config?.autoFill ? this._cellHeight : childConfig.height;
-        return { width, height };
+        return { width: width ?? 0, height: height ?? 0 };
     }
 
-    private calculateChildPosition(childConfig: any,emptyCell: { x: number; y: number }, width: number, height: number): { x: number; y: number } {
+    private calculateChildPosition(childConfig: BaseConfig,emptyCell: { x: number; y: number }, width: number, height: number): { x: number; y: number } {
         const x = emptyCell.x + (childConfig?.x ?? (this._cellWidth - width) / 2);
         const y = emptyCell.y + (childConfig?.y ?? (this._cellHeight - height) / 2);
 
@@ -147,19 +151,20 @@ export class Grid extends Panel {
         this.indexToItemMap.get(index)?.push(child);
     }
 
-    public addCellItems(childConfigs: any[][]): void {
+    public addCellItems(childConfigs: BaseConfig[][]): void {
         const emptyCells = this.getEmptyCells();
         emptyCells.forEach((emptyCell, index) => {
             if (index >= childConfigs.length) return;
+
             this.addItemsToCell(childConfigs[index], emptyCell, index);
         });
     }
 
-    private addItemsToCell(itemConfigs: any[], emptyCell: { x: number; y: number }, cellIndex: number): void {
+    public addItemsToCell(itemConfigs: BaseConfig[], emptyCell: { x: number; y: number }, cellIndex: number): void {
         itemConfigs.forEach((cfg, i) => {
             const { width, height } = this.calculateChildDimensions(cfg);
             const mergedConfig = { ...cfg, width, height };
-            const child = this.createChildFromConfig(mergedConfig);
+            const child = this.scene.getChild(mergedConfig);
             
             this.setupCellChild(child, emptyCell, cellIndex, i, cfg.draggable);
         });
@@ -178,12 +183,12 @@ export class Grid extends Panel {
         this.indexToItemMap.get(cellIndex)?.push(child);
     }
 
-    getItemByIndex(index: any): Container | undefined {
-      return this._content?.getByName(index + "");
+    getItemByIndex(index: number): Container | undefined {
+        return this._content?.getByName(index + "");
     }
 
     public getCellItemsAtIndex(index: number): Container[] {
-        return this.indexToItemMap.get(index) ?? [];
+        return this.getItemByIndex(index)?.getAll() ?? [];
     }
 
     public getEmptyCells(): { x: number; y: number; }[] {
@@ -195,26 +200,6 @@ export class Grid extends Panel {
             }
         });
         return positions;
-    }
-
-    private createChildFromConfig(config: any): Container {
-        const componentMap: { [key: string]: any } = {
-          Image: Image,
-          TextButton: TextButton,
-          TextBox: TextBox,
-          ImageButton: ImageButton,
-          RoundedButton: RoundedButton,
-          Checkbox: Checkbox,
-          CheckboxGroup: CheckboxGroup,
-          Label: Label,
-          ProgressBar: ProgressBar,
-          Slider: Slider,
-          VolumeSlider: VolumeSlider,
-          Text: Text,
-          Sprite: Sprite,
-        };
-        const ComponentClass = componentMap[config.type] || TextButton;
-        return new ComponentClass(this.scene, config);
     }
 
     private setupDraggable(child: Container): void {
@@ -248,20 +233,14 @@ export class Grid extends Panel {
     private handleDragEnd(pointer: Phaser.Input.Pointer): void {
         if (!this._draggingChild) return;
 
-        const draggingCellIndex = this._draggingChild.getData(CellIndex) + "";
-        const targetChild = this.getChildAtPosition(draggingCellIndex, pointer);
+        const draggingCellIndex = this._draggingChild.getData(CellIndex);
+        const draggingItem = this.getItemByIndex(draggingCellIndex);
+        const targetItem = this.getChildAtPosition(draggingCellIndex, pointer);
     
         // resetPostion
-        this._draggingChild.setPosition(
-            this._originalPosition!.x,
-            this._originalPosition!.y
-        );
+        this._draggingChild.setPosition(this._originalPosition!.x, this._originalPosition!.y);
     
-        if (targetChild) {
-            this.swapChildren(this.getItemByIndex(draggingCellIndex)!, targetChild);
-        }
-    
-        this._config?.handleDragEnd?.(this._draggingChild, targetChild, pointer);
+        this._config?.handleDragEnd?.(draggingItem!, targetItem, pointer);
         this.cleanupDragState();
     }
 
@@ -289,7 +268,7 @@ export class Grid extends Panel {
         this.positionSlotMap.set(oldKey, 0);
     }
 
-    private swapChildren(child1: Container, child2: Container): void {
+    public swapChildren(child1: Container, child2: Container): void {
         const targetIndex = this._content!.getIndex(child2);
         const originalIndex = this._content!.getIndex(child1);
         
@@ -339,10 +318,6 @@ export class Grid extends Panel {
         this.positionSlotMap.set(key, 0);
         container.removeAll(true);
         this.addItemPlaceholder(container);
-    }
-    
-    get config(): GridConfig {
-        return this._config!;
     }
     
     destroy(fromScene?: boolean): void {

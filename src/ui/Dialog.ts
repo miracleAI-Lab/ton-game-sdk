@@ -1,12 +1,9 @@
 import { Container } from './Container';
-import { DialogConfig } from '../types';
+import { BaseConfig, DialogConfig } from '../types';
 import { BaseScene } from "../game";
 import { Panel } from './Panel';
-import { TextButton, TextBox, ImageButton, RoundedButton, Checkbox, CheckboxGroup, Label, ProgressBar, Slider, VolumeSlider, Sprite, Image, Text } from './index';
-
-export class Dialog extends Container {
+export class Dialog extends Container<DialogConfig> {
     private _root?: Panel;
-    private _dialogConfig?: DialogConfig;
     private _childComponents: Container[] = [];
 
     constructor(scene: BaseScene, config: DialogConfig) {
@@ -17,19 +14,18 @@ export class Dialog extends Container {
     }
 
     private _initDialog(config: DialogConfig): void {
-        this._dialogConfig = config;
+        this._config = config;
 
         this._createRoot();
         this._positionDialog();
+        this.updateConfig(this._config);
     }
 
     private _createRoot(): void {
         const {
-            x = 0, 
-            y = 0, 
-            width = 0, 
-            height = 0, 
-            texture = '', 
+            width = 0,
+            height = 0,
+            texture = '',
             frame,
             leftWidth = 0,
             rightWidth = 0,
@@ -38,60 +34,43 @@ export class Dialog extends Container {
             radius = 0,
             borderWidth = 0,
             borderColor = 0
-        } = this._dialogConfig!;
-        this._root = new Panel(this.scene, {x, y, width, height, texture, frame, leftWidth, rightWidth, topHeight, bottomHeight, radius, borderWidth, borderColor});
+        } = this._config!;
+        this._root = new Panel(this.scene, { x: 0, y: 0, width, height, texture, frame, leftWidth, rightWidth, topHeight, bottomHeight, radius, borderWidth, borderColor });
         this._root.setName("root");
         this._root.drawBackground();
         this.addAt(this._root, 1);
-        if (this._dialogConfig?.closeButton) {
-            let closeBtnConfig = this._dialogConfig.closeButton;
-            closeBtnConfig.x = closeBtnConfig.x ?? ((this._dialogConfig.width ?? 0) - (closeBtnConfig.width ?? 0) - 30);
+        if (this._config?.isShowCloseButton && this._config?.closeButtonConfig) {
+            let closeBtnConfig = this._config.closeButtonConfig;
+            closeBtnConfig.x = closeBtnConfig.x ?? ((this._config.width ?? 0) - (closeBtnConfig.width ?? 0) - 30);
             closeBtnConfig.y = closeBtnConfig.y ?? 30
-            const child = this.createChildFromConfig(closeBtnConfig);
+            const child = this.scene.getChild(closeBtnConfig);
             this._root!.addChild(child);
             this._childComponents.push(child);
         }
     }
 
     private _positionDialog(): void {
-        const { width = 0, height = 0 } = this._dialogConfig!;
+        const { width = 0, height = 0 } = this._config!;
         const rootX = (this.scene.scale.width - width) / 2;
         const rootY = (this.scene.scale.height - height) / 2;
-        this._root!.setPosition(rootX, rootY);
+        this.setPosition(rootX, rootY);
         this.setDepth(99999);
         this.RefreshBounds();
     }
 
-    public addItems(childConfigs: any[]): void {
+    public addItems(childConfigs: BaseConfig[]) {
         childConfigs.forEach(childConfig => {
-            const child = this.createChildFromConfig(childConfig);
+            const child = this.scene.getChild(childConfig);
             this._root!.addChild(child);
             this._childComponents.push(child);
         });
     }
 
-    private createChildFromConfig(config: any): Container {
-        const componentMap: { [key: string]: any } = {
-          Image,
-          TextButton,
-          TextBox,
-          ImageButton,
-          RoundedButton,
-          Checkbox,
-          CheckboxGroup,
-          Label,
-          ProgressBar,
-          Slider,
-          VolumeSlider,
-          Text,
-          Sprite,
-        };
-        const ComponentClass = componentMap[config.type] || TextButton;
-        return new ComponentClass(this.scene, config);
-    }
-
     public reDraw(config: DialogConfig): void {
-        this.destroy();
+        if (this._root) {
+            this._root.destroy(true);
+            this._root = undefined;
+        }
         this._initDialog(config);
     }
 
@@ -111,10 +90,6 @@ export class Dialog extends Container {
         event.stopPropagation();
     }
 
-    get config(): DialogConfig {
-        return this._dialogConfig!;
-    }
-
     destroy(fromScene?: boolean): void {
         this._childComponents.forEach(child => {
             child.destroy(true);
@@ -126,6 +101,6 @@ export class Dialog extends Container {
         super.destroy(fromScene);
         this._root?.destroy(fromScene);
         this._root = undefined;
-        this._dialogConfig = undefined;
+        this._config = undefined;
     }
 }

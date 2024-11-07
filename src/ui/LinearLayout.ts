@@ -3,10 +3,9 @@ import { Alignment, LinearLayoutConfig, Padding } from '../types';
 import Utils from '../utils';
 import { BaseScene } from "../game";
 
-export class LinearLayout extends Container {
-    private _content: Container;
-    private _bg?: Phaser.GameObjects.Image | Phaser.GameObjects.RenderTexture;
-    private _config: LinearLayoutConfig;
+export class LinearLayout extends Container<LinearLayoutConfig> {
+    protected _content: Container;
+    protected _config: LinearLayoutConfig;
 
     constructor(scene: BaseScene, config: LinearLayoutConfig) {
         super(scene, config);
@@ -149,7 +148,4 @@ export class LinearLayout extends Container {
         this.RefreshBounds();
     }
 
-    get config(): LinearLayoutConfig {
-        return this._config!;
-    }
 }

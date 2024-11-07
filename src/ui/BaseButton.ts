@@ -4,10 +4,11 @@ import { BaseScene } from "../game";
 import { Container } from "./Container";
 import Utils from "../utils";
 
-export class BaseButton extends Container {
-  protected _baseConfig?: BaseButtonConfig;
-  constructor(scene: BaseScene, baseConfig?: BaseButtonConfig, type?: string) {
+export class BaseButton<T extends BaseButtonConfig = BaseButtonConfig> extends Container<T> {
+  protected _baseConfig?: T;
+  constructor(scene: BaseScene, baseConfig?: T, type?: string) {
     super(scene, baseConfig, type);
+    this._baseConfig = baseConfig;
   }
 
   protected initializeEvents(): void {
